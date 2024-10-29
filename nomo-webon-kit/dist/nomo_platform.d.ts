@@ -35,7 +35,6 @@ export declare function nomoGetExecutionMode(): Promise<{
     executionMode: NomoExecutionMode;
     hostingMode: NomoHostingMode | null;
     webView: NomoWebView;
-    cardMode: boolean | null;
 }>;
 /**
  * Returns a comma-separated list of device hashes.
@@ -70,26 +69,7 @@ export declare function nomoCheckForWebOnUpdate(): Promise<void>;
  * Registers a callback that will be called every time when the WebOn gets visible within the Nomo App.
  * For example, this can be used to refresh themes or languages when re-opening a WebOn after a pause.
  */
-export declare function nomoRegisterOnWebOnVisible(callback: (args: {
-    cardMode: boolean;
-}) => void): Promise<void>;
-/**
- * A set of logging-functions to enable debugging with the Nomo dev mode.
- * You should not need to call this directly, since it will be called automatically when calling
- * console.log/console.error/console.warn/console.info.
- */
-export declare const nomoConsole: {
-    log: (...args: any[]) => void;
-    info: (...args: any[]) => void;
-    warn: (...args: any[]) => void;
-    error: (...args: any[]) => void;
-};
-/**
- * After calling this function, console logs are visible in the
- * mobile DevDev-mode of the Nomo App.
- * For the Desktop DevDev-mode, this function is not necessary.
- */
-export declare function nomoEnableMobileConsoleDebugging(): Promise<void>;
+export declare function nomoRegisterOnWebOnVisible(callback: () => void): Promise<void>;
 /**
  * Summons the platform's share sheet to share a text.
  * If no text is provided, then it will share the deeplink of the WebOn.

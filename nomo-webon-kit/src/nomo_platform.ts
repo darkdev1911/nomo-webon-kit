@@ -3,7 +3,7 @@ import {
   invokeNomoFunctionCached,
   isFallbackModeActive,
 } from "./dart_interface";
-import { compareSemanticVersions, stringifyWithBigInts } from "./util";
+import { compareSemanticVersions } from "./util";
 
 export type NomoExecutionMode = "PRODUCTION" | "DEV" | "DEV_DEV" | "FALLBACK";
 export type NomoHostingMode = "NOMO_INTEGRATED_HOSTING" | "EXTERNAL_HOSTING";
@@ -65,14 +65,12 @@ export async function nomoGetExecutionMode(): Promise<{
   executionMode: NomoExecutionMode;
   hostingMode: NomoHostingMode | null;
   webView: NomoWebView;
-  cardMode: boolean | null;
 }> {
   if (isFallbackModeActive()) {
     return {
       executionMode: "FALLBACK",
       hostingMode: null,
       webView: "not_in_nomo_app",
-      cardMode: null,
     };
   }
   return await invokeNomoFunctionCached("nomoGetExecutionMode", null);
@@ -136,79 +134,13 @@ export async function nomoCheckForWebOnUpdate(): Promise<void> {
  * For example, this can be used to refresh themes or languages when re-opening a WebOn after a pause.
  */
 export async function nomoRegisterOnWebOnVisible(
-  callback: (args: { cardMode: boolean }) => void
+  callback: () => void
 ): Promise<void> {
   window.onWebOnVisible = callback;
   if (isFallbackModeActive()) {
     return;
   }
   return await invokeNomoFunctionCached("nomoEnableOnWebOnVisible", {});
-}
-
-const originalConsoleLog = console.log;
-const originalConsoleInfo = console.info;
-const originalConsoleWarn = console.warn;
-const originalConsoleError = console.error;
-
-/**
- * A set of logging-functions to enable debugging with the Nomo dev mode.
- * You should not need to call this directly, since it will be called automatically when calling
- * console.log/console.error/console.warn/console.info.
- */
-export const nomoConsole = {
-  log: function (...args: any[]) {
-    originalConsoleLog(...args);
-    nomoNativeLog("LOG", args);
-  },
-  info: function (...args: any[]) {
-    originalConsoleInfo(...args);
-    nomoNativeLog("INFO", args);
-  },
-  warn: function (...args: any[]) {
-    originalConsoleWarn(...args);
-    nomoNativeLog("WARN", args);
-  },
-  error: function (...args: any[]) {
-    originalConsoleError(...args);
-    nomoNativeLog("ERROR", args);
-  },
-};
-
-let consoleOverwriten: boolean = false;
-
-/**
- * After calling this function, console logs are visible in the
- * mobile DevDev-mode of the Nomo App.
- * For the Desktop DevDev-mode, this function is not necessary.
- */
-export async function nomoEnableMobileConsoleDebugging() {
-  const { executionMode } = await nomoGetExecutionMode();
-  if (executionMode !== "DEV_DEV") {
-    return;
-  }
-  if (!consoleOverwriten) {
-    consoleOverwriten = true;
-    console.log("overwriting console-functions to enable mobile dev mode...");
-    console.log = nomoConsole.log;
-    console.info = nomoConsole.info;
-    console.warn = nomoConsole.warn;
-    console.error = nomoConsole.error;
-  }
-}
-
-function nomoNativeLog(
-  severity: "LOG" | "INFO" | "WARN" | "ERROR",
-  args: any[]
-) {
-  if (isFallbackModeActive()) {
-    return;
-  }
-  try {
-    const argsArray = args.map((arg) => stringifyWithBigInts(arg));
-    invokeNomoFunction("nomoNativeLog", { argsArray, severity });
-  } catch (e) {
-    originalConsoleError(e);
-  }
 }
 
 /**

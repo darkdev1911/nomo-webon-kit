@@ -133,19 +133,15 @@ export declare function nomoGetAssetPrice(args: NomoAssetSelector): Promise<{
     currencySymbol: string;
 }>;
 /**
- * Returns not only the balance of an asset, but also additional information like the network, a contract-address and a receive-address.
- * Typically, the decimals are needed to convert a raw balance into a user-readable balance.
+ * Internally called by "nomoGetBalance".
+ * For EVM-based assets, it is also possible to use ethers.js or similar to fetch a balance.
  */
 export declare function nomoGetBalanceWaitUntilSynced(args: NomoAssetSelector): Promise<NomoAsset & {
     balance: string;
 }>;
 /**
- * A lower-level function to get the balance of an asset.
- * This function may return a null-balance if the asset is not yet visible or not yet synced.
- * Please use one of the following replacements instead of this functions:
- * - For EVM-based assets: Fetch a balance with ethers.js or similar.
- * - For UTXO-based assets: Use "nomoGetBalanceWaitUntilSynced".
- * - Else: Implement additional logic with "nomoSetAssetVisibility"/"nomoGetVisibleAssets".
+ * Returns not only the balance of an asset, but also additional information like the network, a contract-address and a receive-address.
+ * Typically, the decimals are needed to convert a raw balance into a user-readable balance.
  */
 export declare function nomoGetBalance(args: NomoAssetSelector): Promise<NomoAsset & {
     balance: string;
@@ -153,15 +149,18 @@ export declare function nomoGetBalance(args: NomoAssetSelector): Promise<NomoAss
 /**
  * Returns a list of transactions from the Nomo Wallet's transaction-cache.
  * Might fail if the transaction-cache is not yet synchronized.
- *
- * Since Nomo App 0.3.8.
  */
-export declare function nomoGetTransactions(args: NomoAssetSelector): Promise<any>;
+export declare function nomoGetTransactions(args: NomoAssetSelector): Promise<{
+    txs: any[];
+    symbol: string;
+    name: string;
+    decimals: number;
+    contractAddress?: string;
+    network: string;
+}>;
 /**
  * An extended public key is a public key that allows to derive all the addresses of a Nomo Wallet.
  * This is only intended for UTXO-based assets.
- *
- * Since Nomo App 0.3.8.
  */
 export declare function nomoGetExtendedPublicKey(args: NomoAssetSelector): Promise<any>;
 /**
@@ -185,16 +184,6 @@ export declare function nomoLaunchSmartchainFaucet(): Promise<void>;
 export declare function nomoMnemonicBackupExisted(): Promise<{
     mnemonicBackupExisted: boolean;
 }>;
-export interface NomoNFT {
-    blockNumber: number;
-    contractAddress: string;
-    dateTime: number;
-    from: string;
-    hash: string;
-    to: string;
-    tokenID: string;
-    tokenName: string;
-}
 /**
  * Returns a list of NFT-contracts that are declared by the currently installed WebOns.
  * Typically, those NFT-contracts provide some kind of utility for a WebOn.
@@ -222,8 +211,6 @@ export declare function nomoProofOfPayment(args: {
 }): Promise<NomoProofOfPayment>;
 /**
  * Adds or hides an asset within the Nomo Wallet.
- *
- * Since Nomo App 0.4.0.
  */
 export declare function nomoSetAssetVisibility(args: {
     asset: NomoAssetSelector;

@@ -1,15 +1,15 @@
 import { sleep } from "nomo-webon-kit";
-import { NomoUITest } from "../test-kit/nomo-ui-test";
+import { NomoTest } from "../test-kit/nomo-test";
 import { load } from "recaptcha-v3";
 
 // TODO: navigation to other WebOn (with deeplink)
 // TODO: <a href> tag, form navigation
 // TODO: nomo.injectQRCode({ qrCode: "https://nomo.id/stuff" });
 
-class NavigateToGitHub extends NomoUITest {
+class NavigateToGitHub extends NomoTest {
   constructor() {
     super({
-      name: "Sandbox Test 1: Navigate to GitHub",
+      name: "Sandbox 1: Navigate to GitHub",
       description: "Open GitHub in a new window and then close it.",
     });
   }
@@ -39,10 +39,10 @@ class NavigateToGitHub extends NomoUITest {
   }
 }
 
-class RecaptchaV3 extends NomoUITest {
+class RecaptchaV3 extends NomoTest {
   constructor() {
     super({
-      name: "Sandbox Test 2: Google Recaptcha V3",
+      name: "Sandbox 2: Google Recaptcha V3",
       description:
         "Do a captcha verfication and hopefully stay within the sandbox.",
     });
@@ -57,10 +57,10 @@ class RecaptchaV3 extends NomoUITest {
   }
 }
 
-class IFrameTest extends NomoUITest {
+class IFrameTest extends NomoTest {
   constructor() {
     super({
-      name: "Sandbox Test 3: IFrame injection",
+      name: "Sandbox 3: IFrame injection",
       description: "Launch an iframe and hopefully stay within the sandbox.",
     });
   }
@@ -77,7 +77,7 @@ class IFrameTest extends NomoUITest {
   }
 }
 
-export const sandBoxingTests: Array<NomoUITest> = [
+export const sandBoxingTests: Array<NomoTest> = [
   new NavigateToGitHub(),
   new RecaptchaV3(),
   new IFrameTest(),

@@ -58,6 +58,7 @@ export declare const nomo: {
     injectQRCode: typeof media.nomoInjectQRCode;
     fallbackQRCode: typeof media.nomoFallbackQRCode;
     subscribeNotification: typeof media.nomoSubscribeNotification;
+    resolveName: typeof media.nomoResolveName;
     runsAsWebOn: typeof platform.runsAsWebOn;
     hasMinimumNomoVersion: typeof platform.hasMinimumNomoVersion;
     checkForWebOnUpdate: typeof platform.nomoCheckForWebOnUpdate;
@@ -67,7 +68,6 @@ export declare const nomo: {
     getDeviceHashes: typeof platform.nomoGetDeviceHashes;
     getDeviceName: typeof platform.nomoGetDeviceName;
     registerOnWebOnVisible: typeof platform.nomoRegisterOnWebOnVisible;
-    enableMobileConsoleDebugging: typeof platform.nomoEnableMobileConsoleDebugging;
     share: typeof platform.nomoShare;
     injectNomoCSSVariables: typeof theming.injectNomoCSSVariables;
     switchNomoTheme: typeof theming.switchNomoTheme;

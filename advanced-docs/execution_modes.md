@@ -12,8 +12,6 @@ Moreover, Webons can run in the following _hosting modes_:
 - Nomo integrated hosting
 - External hosting
 
-Finally, WebOns can decide if they want to support the _card mode_.
-
 This document aims to clarify all the modes and support WebOn developers through their journey.
 
 ## Production Mode
@@ -32,11 +30,6 @@ To enable the Dev mode, you need to visit the DevDev mode only one time. Afterwa
 
 The DevDev mode allows to run code even without installing a WebOn.
 As such, the DevDev mode is the only mode that does not require a `nomo_manifest.json`.
-
-In addition, the DevDev mode provides additional features like reload-buttons, back-buttons and a button to clear the cache.
-
-> :warning: Be aware that the DevDev-features are not available in production!
-> For example, if your WebOn needs a back-button, then you need to implement the back-button by yourself.
 
 ## Fallback Mode
 
@@ -67,10 +60,4 @@ WebOns with external hosting work similar to a regular website.
 
 As such, externally hosted WebOns are refreshed whenever you restart the Nomo App.
 
-External hosting is mainly intended for development, where a fast refresh is needed for testing changes of a WebOn.
-
-# Card Mode
-
-The "cards" are part of the Nomo App's UI design.
-WebOns have the option to run below of a card if they want to support it.
-If card mode is enabled in the manifest, then a WebOn needs to implement a responsive design that works in both fullscreen mode and card mode.
+External hosting is also useful for development, where a fast refresh is needed for testing changes of a WebOn.

@@ -135,10 +135,10 @@ export function nomoFallbackQRCode() {
   if (!isFallbackModeActive()) {
     return;
   }
+  const deeplink =
+    window.location.protocol + "//nomo.app/webon/" + window.location.host;
   const url =
-    "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" +
-    "http://nomo.app/webon/" +
-    window.location.host;
+    "https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=" + deeplink;
   document.body.innerHTML += `
   <style>
     #not_in_nomo_dialog{
@@ -169,7 +169,7 @@ export function nomoFallbackQRCode() {
     <img src=${url} alt=${url}> 
     <h2 style="margin: 10px; color: white">Attention:</h2>
     <div style="text-align: center; color: white">You are currently displaying a WebOn outside your NOMO App. Please download the NOMO App here</div>
-    <button id="not_in_nomo_dialog__btn" onclick="window.location.href='https://nomo.app/downloads'">Download NOMO App</button>
+    <button id="not_in_nomo_dialog__btn" onclick="window.location.href='https://nomo.app/install'">Download NOMO App</button>
   </dialog>`;
 
   const dialog = document.getElementById(
@@ -180,4 +180,13 @@ export function nomoFallbackQRCode() {
   } catch (e) {
     dialog.show();
   }
+}
+
+/**
+ * Uses the ZENIQ Name Service (.znq) or the Ethereum Name Service (.eth) to resolve a name to an address.
+ */
+export async function nomoResolveName(args: {
+  name: string;
+}): Promise<{ address: string | null; nameService: string }> {
+  return await invokeNomoFunction("nomoResolveName", args);
 }
