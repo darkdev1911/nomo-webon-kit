@@ -36,31 +36,6 @@ export async function nomoSignEvmTransaction(args) {
     return await invokeNomoFunction("nomoSignEvmTransaction", args);
 }
 /**
- * Creates an Ethereum-styled message signature.
- * The resulting signature is not usable for submitting transactions,
- * but it can be used as a proof that the user controls a wallet.
- *
- * Needs nomo.permission.SIGN_EVM_MESSAGE.
- */
-export async function nomoSignEvmMessage(args) {
-    if (isFallbackModeActive()) {
-        if (window.fallbackWalletDisabled) {
-            return Promise.reject("nomoSignEvmMessage failed: fallback wallets are disabled!");
-        }
-        if (!window.ethereum) {
-            return Promise.reject("nomoSignEvmMessage fallback mode failed: window.ethereum is undefined!");
-        }
-        // Use MetaMask API to sign message
-        const from = (await window.ethereum.request({ method: "eth_accounts" }))[0];
-        const sigHex = await window.ethereum.request({
-            method: "personal_sign",
-            params: [args.message, from],
-        });
-        return { sigHex: sigHex };
-    }
-    return await invokeNomoFunction("nomoSignEvmMessage", args);
-}
-/**
  * Opens a confirmation-dialog to send assets away from the Nomo App.
  * Assets are only sent if the user confirms the dialog.
  * "amount" should be a string that can be parsed by "BigInt.parse":  https://api.flutter.dev/flutter/dart-core/BigInt/parse.html
@@ -139,8 +114,6 @@ export async function nomoGetVisibleAssets() {
 /**
  * Returns a list of supported assets that can be made visible via "nomoSetAssetVisibility".
  * This might also include custom tokens that the user has added.
- *
- * Since Nomo App 0.4.1.
  */
 export async function nomoGetAllAssets() {
     if (isFallbackModeActive()) {
@@ -158,8 +131,7 @@ export async function nomoGetAllAssets() {
     return await invokeNomoFunction("nomoGetAllAssets", {});
 }
 /**
- * A convenience function to get the Smartchain address of the Nomo Wallet.
- * Internally, it calls "nomoGetWalletAddresses" and caches the result.
+ * Returns the Smartchain address of a Nomo Wallet.
  */
 export async function nomoGetEvmAddress() {
     if (isFallbackModeActive()) {
@@ -171,8 +143,15 @@ export async function nomoGetEvmAddress() {
             return Promise.reject("nomoGetEvmAddress fallback mode failed: window.ethereum is undefined!");
         }
     }
-    const res = await nomoGetWalletAddresses();
-    return res.walletAddresses["ETH"];
+    try {
+        const res = await invokeNomoFunctionCached("nomoGetEvmAddress", null);
+        return res.evmAddress;
+    }
+    catch (e) {
+        // fallback for older versions of the Nomo App
+        const res = await nomoGetWalletAddresses();
+        return res.walletAddresses["ETH"];
+    }
 }
 /**
  * Returns blockchain-addresses of the NOMO-user.

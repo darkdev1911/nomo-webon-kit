@@ -19,12 +19,20 @@ export type NomoNetwork =
   | "bitcoincash";
 
 export interface NomoAssetSelector {
+  /**
+   * symbol will be ignored if contractAddress or uuid is specified.
+   * symbol should be only used together with other selectors.
+   */
   symbol: string;
+  /**
+   * name will be ignored if contractAddress or uuid is specified.
+   * name should be only used together with other selectors.
+   */
   name?: string;
   network?: NomoNetwork;
   /**
-   * contractAddress is the strongest asset-selector with the highest security.
-   * If contractAddress is specified, then name and symbol will be ignored.
+   * contractAddress in combination with network is the strongest asset-selector with the highest security.
+   * There are rare cases where a contractAddress is not unique across different networks (e.g. AVINOC-ZEN20/AVINOC-ERC20).
    */
   contractAddress?: string;
   /**
@@ -78,38 +86,6 @@ export async function nomoSignEvmTransaction(args: {
     return { sigHex, txHex: "" };
   }
   return await invokeNomoFunction("nomoSignEvmTransaction", args);
-}
-
-/**
- * Creates an Ethereum-styled message signature.
- * The resulting signature is not usable for submitting transactions,
- * but it can be used as a proof that the user controls a wallet.
- *
- * Needs nomo.permission.SIGN_EVM_MESSAGE.
- */
-export async function nomoSignEvmMessage(args: {
-  message: string;
-}): Promise<{ sigHex: string }> {
-  if (isFallbackModeActive()) {
-    if (window.fallbackWalletDisabled) {
-      return Promise.reject(
-        "nomoSignEvmMessage failed: fallback wallets are disabled!"
-      );
-    }
-    if (!window.ethereum) {
-      return Promise.reject(
-        "nomoSignEvmMessage fallback mode failed: window.ethereum is undefined!"
-      );
-    }
-    // Use MetaMask API to sign message
-    const from = (await window.ethereum.request({ method: "eth_accounts" }))[0];
-    const sigHex = await window.ethereum.request({
-      method: "personal_sign",
-      params: [args.message, from],
-    });
-    return { sigHex: sigHex };
-  }
-  return await invokeNomoFunction("nomoSignEvmMessage", args);
 }
 
 /**
@@ -210,8 +186,6 @@ export async function nomoGetVisibleAssets(): Promise<{
 /**
  * Returns a list of supported assets that can be made visible via "nomoSetAssetVisibility".
  * This might also include custom tokens that the user has added.
- *
- * Since Nomo App 0.4.1.
  */
 export async function nomoGetAllAssets(): Promise<{
   assets: Array<NomoAsset>;
@@ -232,8 +206,7 @@ export async function nomoGetAllAssets(): Promise<{
 }
 
 /**
- * A convenience function to get the Smartchain address of the Nomo Wallet.
- * Internally, it calls "nomoGetWalletAddresses" and caches the result.
+ * Returns the Smartchain address of a Nomo Wallet.
  */
 export async function nomoGetEvmAddress(): Promise<string> {
   if (isFallbackModeActive()) {
@@ -249,8 +222,14 @@ export async function nomoGetEvmAddress(): Promise<string> {
       );
     }
   }
-  const res = await nomoGetWalletAddresses();
-  return res.walletAddresses["ETH"];
+  try {
+    const res = await invokeNomoFunctionCached("nomoGetEvmAddress", null);
+    return res.evmAddress;
+  } catch (e) {
+    // fallback for older versions of the Nomo App
+    const res = await nomoGetWalletAddresses();
+    return res.walletAddresses["ETH"];
+  }
 }
 
 /**

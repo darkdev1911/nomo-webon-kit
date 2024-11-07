@@ -40,12 +40,6 @@ export interface NomoManifest {
    */
   cache_url?: string;
   /**
-   * If set, the Nomo App will reject a cache if the signature cannot be verified.
-   * cache_sig should be an Ethereum-styled message signature of a tar.gz-cache.
-   */
-  cache_sig?: string;
-
-  /**
    * A list of additional content for the WebOn; one of the following:
    * - A JavaScript-URL to be injected into the WebOn.
    * - A social media link or a link to a website.
@@ -122,7 +116,6 @@ export async function nomoInstallWebOn(args: {
  * Installs a URL as a WebOn and grants the permissions that are specified in the manifest.
  *
  * Needs nomo.permission.INSTALL_WEBON.
- * Since Nomo App 0.3.5.
  */
 export async function nomoInstallUrlAsWebOn(args: {
   manifest: NomoManifest;
@@ -241,7 +234,6 @@ export async function nomoLaunchUrl(args: {
  * If possible, please prefer "nomoLaunchUrl" or "nomoLaunchWebOn" over this function.
  *
  * Needs nomo.permission.INSTALL_WEBON.
- * Since Nomo App 0.3.5.
  */
 export async function nomoLaunchUrlAsWebOn(args: {
   manifest: NomoManifest;

@@ -15,6 +15,7 @@ import { getTransactionTests } from "./tests/tc-get-transactions";
 import { resolveNameTests } from "./tests/tc-resolve-names";
 import { deeplinkTests } from "./tests/tc-deeplinks";
 import { proofOfPaymentTests } from "./tests/tc-proof-of-payment";
+import { useNavigate } from "react-router-dom";
 
 const manualTests: Array<NomoTest> = [
   ...sendAssetsManualTests,
@@ -68,6 +69,26 @@ function UnitTestRunner() {
   );
 }
 
+function BackButton() {
+  const navigate = useNavigate();
+  return (
+    <div
+      onClick={() => navigate(-1)}
+      style={{
+        textAlign: "center",
+        marginRight: "5px",
+        padding: "0px 10px",
+        fontSize: "x-large",
+        backgroundColor: "lightblue",
+        border: "2px solid black",
+        borderRadius: "5px",
+      }}
+    >
+      {"←"}
+    </div>
+  );
+}
+
 export default function ApiTestPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const webOnVersion = useWebOnVersion();
@@ -91,11 +112,14 @@ export default function ApiTestPage() {
         fontFamily: "Helvetica",
       }}
     >
-      <div>
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+      >
+        <BackButton />
         <div
           style={{
             marginBottom: "0px",
-            fontSize: "xx-large",
+            fontSize: "x-large",
             fontWeight: "bold",
           }}
         >
